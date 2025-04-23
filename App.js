@@ -1,19 +1,31 @@
 import { StatusBar } from 'expo-status-bar';
-import React, {useState} from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 
 export default function App() {
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [message, setMessage] = useState('');
+  const [messageColor, setMessageColor] = useState('red');
+
+  const validatePhoneNumber = (phone) => {
+    const phoneRegex = /^(0[3|5|7|8|9])+([0-9]{8})$/;
+    return phoneRegex.test(phone);
+  };
 
   const handleContinue = () => {
     if (phoneNumber.trim() === '') {
-      Alert.alert('Thông báo', 'Vui lòng nhập số điện thoại!');
+      setMessage('Vui lòng nhập số điện thoại!');
+      setMessageColor('red');
+    } else if (!validatePhoneNumber(phoneNumber)) {
+      setMessage('Số điện thoại không hợp lệ!');
+      setMessageColor('red');
     } else {
-      Alert.alert('Số điện thoại của bạn', phoneNumber);
+      setMessage(`Số điện thoại hợp lệ!`);
+      setMessageColor('green');
     }
   };
+
   return (
-    
     <View style={styles.container}>
       <Text style={styles.title}>Đăng nhập</Text>
       <Text style={styles.subTitle}>Nhập số điện thoại</Text>
@@ -24,12 +36,16 @@ export default function App() {
         style={styles.input}
         placeholder="Nhập số điện thoại của bạn"
         keyboardType="phone-pad"
-        onChangeText={setPhoneNumber}
-        value={phoneNumber}/>
+        onChangeText={(text) => {
+          setPhoneNumber(text);
+          setMessage('');
+        }}
+        value={phoneNumber}
+      />
+      {message ? <Text style={[styles.messageText, { color: messageColor }]}>{message}</Text> : null}
       <TouchableOpacity style={styles.buttonInput} onPress={handleContinue}>
         <Text style={styles.buttonText}>Tiếp tục</Text>
       </TouchableOpacity>
-      
     </View>
   );
 }
@@ -52,22 +68,22 @@ const styles = StyleSheet.create({
   subTitle: {
     marginTop: 50,
     fontSize: 20,
-    marginLeft: 0,
-    
   },
   description: {
     fontSize: 16,
     marginTop: 10,
-    paddingLeft: 0,
-
   },
   input: {
     marginTop: 20,
-    height: 'auto',
+    height: 40,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
     fontSize: 16,
     padding: 5,
+  },
+  messageText: {
+    marginTop: 5,
+    fontSize: 14,
   },
   buttonInput: {
     marginTop: 20,
@@ -81,5 +97,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  
 });
